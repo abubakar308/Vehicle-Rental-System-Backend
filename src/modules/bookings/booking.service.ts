@@ -7,11 +7,11 @@ const createBooking = async (payload: Record<string, unknown>) =>{
 
     const vehiclePrice = vehicleData.rows[0].daily_rent_price;
 
-    const start = new Date(rent_start_date);
-    const end = new Date(rent_end_date);
+    const start  = new Date(rent_start_date as string);
+    const end = new Date(rent_end_date as string);
 
 // difference in ms → convert to days
-const days = (end - start) / (1000 * 60 * 60 * 24);
+const days = (end.getDate() - start.getDate()) / (1000 * 60 * 60 * 24);
 const total_price = vehiclePrice * days;
 
     
@@ -31,7 +31,9 @@ const vehicleRes = await pool.query(
 );
 
 
-return result;
+return { 
+  ...result, vehicle: vehicleRes
+}
 
 
 }
@@ -41,5 +43,4 @@ return result;
 
 export const bookingService = {
     createBooking,
-    vehicleRes
 };
