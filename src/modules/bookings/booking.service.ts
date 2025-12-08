@@ -7,12 +7,13 @@ const createBooking = async (payload: Record<string, unknown>) =>{
 
     const vehiclePrice = vehicleData.rows[0].daily_rent_price;
 
-    const start  = new Date(rent_start_date as number);
-    const end = new Date(rent_end_date as number);
+    const start  = new Date(rent_start_date as any);
+    const end = new Date(rent_end_date as any);
 
-// difference in ms → convert to days
-const days = (end.getDate() - start.getDate()) / (1000 * 60 * 60 * 24);
-const total_price = vehiclePrice * days;
+const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+
+const total_price = Math.ceil(vehiclePrice * days);
+
 
     
 const status = "active";
@@ -42,14 +43,26 @@ return result;
 const getALlBookings = async () =>{
  const result = await pool.query(`SELECT id, customer_id, vehicle_id, rent_start_date, rent_end_date, total_price, status FROM bookings`);
  
- console.log(result);
  return result;
 };
 
 
 
  const updateBooking = async(status: string, bookingId: string) =>{
+
+    const rent_end_date = new Date();
     const result = await pool.query(`UPDATE bookings SET status=$1 WHERE id=$2 RETURNING * `,[status, bookingId]);
+
+    const vehicle_id = result.rows[0].vehicle_id;
+
+   if(rent_end_date > result.rows[0].rent_end_date){
+    status = "returned"
+   }
+
+   if(status==="returned"){
+    pool.query(`UPDATE Vehicles SET availability_status="available" WHERE id=$1`,[vehicle_id])
+   }
+
      return result;
  };
 

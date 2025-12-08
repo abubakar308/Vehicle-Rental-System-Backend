@@ -1,98 +1,12 @@
-🚗 Vehicle Rental System – Backend
+# 🚗 Vehicle Rental System – Backend
 
-Live URL: https://vehicle-rental-system-lovat.vercel.app/
+### Live URL: https://vehicle-rental-system-lovat.vercel.app/
 
-Repository: https://github.com/abubakar308/Vehicle-Rental-System-Backend
 
-A role-based secure backend system for a vehicle rental platform built with Node.js, Express.js, PostgreSQL, JWT Authentication, and Modular Architecture.
+* A role-based secure backend system for a vehicle rental platform built with Node.js, Express.js, PostgreSQL, JWT Authentication, and Modular Architecture.
 
-✨ Features
-🔐 Authentication & Authorization
 
-User Registration & Login
-
-Password hashing using bcryptjs
-
-JWT-based Authentication
-
-Role-based Access Control (Admin & Customer)
-
-👤 Users Module
-
-Admin:
-
-Get all users
-
-Update any user (role & profile)
-
-Delete user
-
-Customer:
-
-Get own profile
-
-Update own profile
-
-🚗 Vehicles Module
-
-Admin:
-
-Add vehicle
-
-Update vehicle
-
-Delete vehicle
-
-Get all vehicles
-
-Customer:
-
-Get all vehicles
-
-Get single vehicle
-
-📒 Bookings Module
-
-Admin & Customer:
-
-Create booking
-
-Update booking
-
-Get own bookings
-
-Admin only:
-
-Get all bookings
-
-Booking:
-
-Auto calculates total days
-
-Calculates total price
-
-Returns embedded vehicle data
-
-Updates vehicle status after booking
-
-🛠️ Technology Stack
-Backend
-
-Node.js
-
-Express.js
-
-TypeScript
-
-JWT
-
-bcryptjs
-
-PostgreSQL
-
-pg driver
-
-Architecture
+## Architecture
 
 Fully modular folder structure
 
@@ -118,76 +32,77 @@ src
 app.ts
 server.ts
 
-⚙️ Setup & Installation
-1️⃣ Clone the repository
+## ✨ Features
+ ### 🔐 Authentication & Authorization
+
+* User Registration & Login
+
+* Password hashing using bcryptjs
+
+* JWT-based Authentication
+
+* Role-based Access Control (Admin & Customer)
+
+### 👤 Users Table
+
+* Admin: Get all users, Update any user (role & profile), Delete user
+
+* Customer: Get own profile, Update own profile
+
+### 🚗 Vehicles Table
+
+* Admin: Add vehicle, Update vehicle, Delete vehicle, Get all vehicles
+
+* Customer: Get all vehicles, Get single vehicle
+
+### 📒 Bookings Table
+
+* Admin & Customer: Create booking,  Update booking, Get own bookings
+
+Admin only: Get all bookings,
+
+* Booking: Auto calculates total days, Calculates total price, Returns vehicle data, Updates vehicle status after booking
+
+
+## 🛠️ Technology Stack
+
+**Server:** Node, Express,TypeScript, JWT, bcryptjs
+, PostgreSQL, pg driver
+## Setup & Usage Instructions
+
+
+### 📥 1. Clone the Repository
+```sh
 git clone https://github.com/abubakar308/Vehicle-Rental-System-Backend.git
-cd Vehicle-Rental-System-Backend
+cd Vehicle-Rental-System-Backend 
+```
 
-2️⃣ Install dependencies
+### 🖥 2. Install Dependencies
+```sh
 npm install
+```
 
-3️⃣ Create .env file
-CONNECTION_STR=postgresql://your_connection_url
+
+## Environment Variables
+
+To run this project, you will need to add the following environment variables to your .env file
+
+`API_KEY`
+
+`ANOTHER_API_KEY`
+
+#### Create .env file
+CONNECTION_STR=postgresql://connection_url
 PORT=5000
-JWT_SECRET=your-secret-key
-
-
-(Your provided neonDB URL can be added here)
+JWT_SECRET=secret-key
 
 🏃 Run the project
 Development mode
 npm run dev
 
-Build TypeScript
-npm run build
+#### Run the Backend:
+```sh
+npm run dev
+```
 
-Run compiled JS
-npm start
-
-🚀 Deployment (Vercel)
-
-Install vercel globally
-
-npm i -g vercel
-
-
-Deploy
-
-vercel --prod
-
-📌 API Summary
-Auth
-
-POST /api/v1/auth/register
-
-POST /api/v1/auth/login
-
-Users
-
-GET /api/v1/users (Admin)
-
-GET /api/v1/users/me (Customer/Admin)
-
-PUT /api/v1/users/:userId (Admin or Own)
-
-DELETE /api/v1/users/:userId (Admin)
-
-Vehicles
-
-POST /api/v1/vehicles (Admin)
-
-GET /api/v1/vehicles
-
-GET /api/v1/vehicles/:vehicleId
-
-PUT /api/v1/vehicles/:vehicleId (Admin)
-
-DELETE /api/v1/vehicles/:vehicleId (Admin)
-
-Bookings
-
-POST /api/v1/bookings
-
-GET /api/v1/bookings (Admin sees all, customer sees own)
-
-PUT /api/v1/bookings/:id
+---

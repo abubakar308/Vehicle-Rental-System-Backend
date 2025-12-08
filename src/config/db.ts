@@ -12,8 +12,9 @@ const initDb = async()=> {
         id SERIAL PRIMARY KEY,
         name VARCHAR(100) NOT NULL,
         email VARCHAR(150) UNIQUE NOT NULL,
-        password TEXT NOT NULL,
-        phone INT NOT NULL,
+        password VARCHAR(255) NOT NULL,
+       CONSTRAINT minlength CHECK (LENGTH(password) >= 6),
+        phone BIGINT NOT NULL,
         role VARCHAR(50) NOT NULL
         )` 
     );
@@ -36,7 +37,7 @@ const initDb = async()=> {
         vehicle_id INT REFERENCES Vehicles(id) ON DELETE CASCADE,
         rent_start_date	DATE,
         rent_end_date DATE,
-        total_price INT NOT NULL ,
+        total_price INT NOT NULL,
         status VARCHAR(50)
         )`
     );
