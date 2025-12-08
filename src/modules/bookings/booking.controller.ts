@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { bookingService } from "./booking.service";
 
 const createBooking = async(req: Request, res: Response) =>{
-      console.log(req.body);
     try{
         const result = await bookingService.createBooking(req.body);
 

@@ -28,7 +28,7 @@ const updateUser = async (req: Request, res: Response) =>{
 try{
 const result = await userServices.updateUser(req.params.userId!);
 
-if (result.rows[0].role === "customer" && result.rows[0].id !== req.params.userId) {
+if (result.rows[0].role === "customer" && result.rows[0].id !== req.params.userId || result.rows[0].role !== "admin") {
   return res.status(403).json({
     success: false,
     message: "Customers can update only their own profile",

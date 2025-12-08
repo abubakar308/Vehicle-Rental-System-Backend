@@ -7,8 +7,8 @@ const createBooking = async (payload: Record<string, unknown>) =>{
 
     const vehiclePrice = vehicleData.rows[0].daily_rent_price;
 
-    const start  = new Date(rent_start_date as string);
-    const end = new Date(rent_end_date as string);
+    const start  = new Date(rent_start_date as number);
+    const end = new Date(rent_end_date as number);
 
 // difference in ms → convert to days
 const days = (end.getDate() - start.getDate()) / (1000 * 60 * 60 * 24);
@@ -24,16 +24,15 @@ if(result){
 };
 
 const vehicleRes = await pool.query(
-  `SELECT vehicle_name, daily_rent_price vehicleRes
+  `SELECT vehicle_name, daily_rent_price, availability_status
    FROM Vehicles 
    WHERE id=$1`,
   [vehicle_id]
 );
 
+console.log(vehicleRes);
 
-return { 
-  ...result, vehicle: vehicleRes
-}
+return result;
 
 
 }
