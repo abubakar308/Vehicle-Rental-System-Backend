@@ -9,14 +9,14 @@ const getALlUsers = async(req: Request, res: Response) =>{
           return res.status(200).json({
             success: true,
             message: "Users retrieved successfully",
-            data: result.rows[0]
+            data: result.rows
         })
 
 
     } catch(err: any){
         return res.status(500).json({
-            ssuccess: false,
-            mesasge: err.mesasge
+            success: false,
+            messasge: err.messasge
 
         })
     }
@@ -24,11 +24,16 @@ const getALlUsers = async(req: Request, res: Response) =>{
 
 
 const updateUser = async (req: Request, res: Response) =>{
-const {id} = req.body;
-console.log(id);
 
 try{
-const result = await userServices.updateUser(req.params.id!);
+const result = await userServices.updateUser(req.params.userId!);
+
+if (result.rows[0].role === "customer" && result.rows[0].id !== req.params.userId) {
+  return res.status(403).json({
+    success: false,
+    message: "Customers can update only their own profile",
+  });
+} 
 
    return res.status(200).json({
             success: true,

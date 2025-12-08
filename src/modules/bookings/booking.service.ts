@@ -40,7 +40,25 @@ return {
 
 
 
+const getALlBookings = async () =>{
+ const result = await pool.query(`SELECT id, customer_id, vehicle_id, rent_start_date, rent_end_date, total_price, status FROM bookings`);
+ 
+ console.log(result);
+ return result;
+};
+
+
+
+ const updateBooking = async(status: string, bookingId: string) =>{
+    const result = await pool.query(`UPDATE bookings SET status=$1 WHERE id=$2 RETURNING * `,[status, bookingId]);
+     return result;
+ };
+
+
+
 
 export const bookingService = {
     createBooking,
+    getALlBookings,
+    updateBooking
 };

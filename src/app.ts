@@ -17,7 +17,7 @@ app.use("/api/v1/users", userRouter);
 
 app.use("/api/v1/vehicles", vehicleRoute);
 
-app.use("/api/v1/bookings", bookingRoute)
+app.use("/api/v1/bookings", bookingRoute);
 
 app.get("/", (req: Request, res: Response)=>{
     res.send("Hello from Next Level Assignment 2");

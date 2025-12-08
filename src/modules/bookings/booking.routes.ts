@@ -5,11 +5,11 @@ import { bookingController } from "./booking.controller";
 const router = Router();
 
 router.post("/", bookingController.createBooking)
-// router.get("/", vehicleController.getAllVehicles);
+router.get("/", bookingController.getALlBookings);
 
 // router.get("/:vehicleId", vehicleController.getVehicleById);
 
-// router.put("/:vehicleId", vehicleController.updateVehicle);
+router.put("/:bookingId", bookingController.updateBooking);
 
 // router.delete("/:vehicleId", vehicleController.deleteVehicle)
 
