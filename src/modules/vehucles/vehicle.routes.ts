@@ -9,9 +9,9 @@ const router = Router();
 
 router.post("/", verify, auth("admin"), vehicleController.crteateVehicle);
 
-router.get("/", verify, auth("customer"), vehicleController.getAllVehicles);
+router.get("/", vehicleController.getAllVehicles);
 
-router.get("/:vehicleId", verify, auth("customer"), vehicleController.getVehicleById);
+router.get("/:vehicleId", vehicleController.getVehicleById);
 
 router.put("/:vehicleId", verify, auth("admin"), vehicleController.updateVehicle);
 

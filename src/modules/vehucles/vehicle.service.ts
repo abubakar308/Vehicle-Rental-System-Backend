@@ -2,12 +2,37 @@ import { pool } from "../../config/db"
 
 const crteateVehicle = async(payload: Record<string, unknown>) =>{
     const { vehicle_name, type, registration_number, daily_rent_price, availability_status } = payload;
+
+      if (
+    !vehicle_name ||
+    !type ||
+    !registration_number ||
+    !daily_rent_price ||
+    !availability_status
+  ) {
+    throw new Error("All fields are required");
+  }
+
+
+    const exists = await pool.query(
+    "SELECT * FROM vehicles WHERE registration_number = $1",
+    [registration_number]
+  );
+
+  if (exists.rows.length > 0) {
+    throw new Error("Registration number already exists");
+  }
+
+
     const result = await pool.query(`INSERT INTO Vehicles(vehicle_name, type, registration_number, daily_rent_price, availability_status) VALUES($1, $2, $3, $4, $5) RETURNING *`, [vehicle_name, type, registration_number, daily_rent_price, availability_status]);
 
-    return result;
+return result;
+
 };
 
 
+
+//get all vehicles
 const getAllVehicles = async() =>{
     const result = await pool.query(`SELECT * FROM Vehicles`);
     return result;

@@ -50,18 +50,27 @@ const getALlBookings = async () =>{
 
  const updateBooking = async(status: string, bookingId: string) =>{
 
-    const rent_end_date = new Date();
+    
     const result = await pool.query(`UPDATE bookings SET status=$1 WHERE id=$2 RETURNING * `,[status, bookingId]);
 
     const vehicle_id = result.rows[0].vehicle_id;
 
-   if(rent_end_date > result.rows[0].rent_end_date){
-    status = "returned"
-   }
+   const toDay = new Date();
+const endDay = new Date(result.rows[0].rent_end_date);
+
+ let finalStatus = status;
+
+ finalStatus = result.rows[0].status;
+
+if (toDay > endDay) {
+    finalStatus = "returned";
+}
 
    if(status==="returned"){
-    pool.query(`UPDATE Vehicles SET availability_status="available" WHERE id=$1`,[vehicle_id])
+    const status = "available"
+    pool.query(`UPDATE Vehicles SET availability_status=$1 WHERE id=$2`,[status, vehicle_id])
    }
+
 
      return result;
  };
