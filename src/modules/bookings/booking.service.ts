@@ -107,7 +107,6 @@ const getALlBookings = async (user: any) =>{
     [user.id]
   );
 
-// console.log(result);
   return result.rows.map((item) => ({
     id: item.id,
     vehicle_id: item.vehicle_id,
