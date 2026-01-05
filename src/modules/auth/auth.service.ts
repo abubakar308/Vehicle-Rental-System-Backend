@@ -33,10 +33,9 @@ if(!match){
     return false;
 }
 
-const token = jwt.sign({ name: user.name, email: user.email, role: user.role}, config.jwtSecret as string, {
+const token = jwt.sign({id: user.id, name: user.name, email: user.email, role: user.role}, config.jwtSecret as string, {
     expiresIn: "7d",
 } );
-console.log(token);
 
  delete user.password;
 

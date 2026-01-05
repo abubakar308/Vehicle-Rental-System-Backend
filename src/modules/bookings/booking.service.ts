@@ -26,7 +26,7 @@ const createBooking = async (payload: Record<string, unknown>) =>{
   );
   const total_price = diffDays * vehicle.daily_rent_price;
 
-//   3️⃣ Insert booking
+//  Insert booking
 
   const bookingResult = await pool.query(
     `INSERT INTO bookings (
@@ -64,10 +64,65 @@ const booking = bookingResult.rows[0];
 
 
 
-const getALlBookings = async () =>{
- const result = await pool.query(`SELECT id, customer_id, vehicle_id, rent_start_date, rent_end_date, total_price, status FROM bookings`);
- 
- return result;
+const getALlBookings = async (user: any) =>{
+
+ if (user.role === "admin") {
+    const result = await pool.query(`
+      SELECT b.*, 
+        u.name AS customer_name, u.email AS customer_email,
+        v.vehicle_name, v.registration_number
+      FROM bookings b
+      JOIN users u ON b.customer_id = u.id
+      JOIN vehicles v ON b.vehicle_id = v.id
+    `);
+
+    return result.rows.map((item) => ({
+      id: item.id,
+      customer_id: item.customer_id,
+      vehicle_id: item.vehicle_id,
+      rent_start_date: item.rent_start_date,
+      rent_end_date: item.rent_end_date,
+      total_price: item.total_price,
+      status: item.status,
+      customer: {
+        name: item.customer_name,
+        email: item.customer_email,
+      },
+      vehicle: {
+        vehicle_name: item.vehicle_name,
+        registration_number: item.registration_number,
+      },
+    }));
+  }
+
+
+  // Customer view
+  const result = await pool.query(
+    `
+    SELECT b.*, v.vehicle_name, v.registration_number, v.type
+    FROM bookings b
+    JOIN vehicles v ON b.vehicle_id = v.id
+    WHERE b.customer_id = $1
+    `,
+    [user.id]
+  );
+
+// console.log(result);
+  return result.rows.map((item) => ({
+    id: item.id,
+    vehicle_id: item.vehicle_id,
+    rent_start_date: item.rent_start_date,
+    rent_end_date: item.rent_end_date,
+    total_price: item.total_price,
+    status: item.status,
+    vehicle: {
+      vehicle_name: item.vehicle_name,
+      registration_number: item.registration_number,
+      type: item.type,
+    },
+  }));
+    
+
 };
 
 
@@ -98,8 +153,6 @@ if (toDay > endDay) {
 
      return result;
  };
-
-
 
 
 export const bookingService = {

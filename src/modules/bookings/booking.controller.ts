@@ -24,24 +24,17 @@ const createBooking = async(req: Request, res: Response) =>{
 const getALlBookings = async(req: Request, res: Response) =>{
 
     try{
-        const result = await bookingService.getALlBookings();
-console.log(result.rows[0]);
+        const user =req.user!;
+        const result = await bookingService.getALlBookings(user);
         
-         if(req.user.role === "admin"){
-             return res.status(200).json({
-            success: true,
-            message: "Bookings retrieved successfully",
-            data: result.rows
-        })
-         }
-
-         else if(req.user.role === "customer"){
-            return res.status(200).json({
-            success: true,
-            message: "Bookings retrieved successfully",
-            data: result.rows[0]
-        })
-         }
+       return res.status(200).json({
+      success: true,
+      message:
+        user.role === "admin"
+          ? "Bookings retrieved successfully"
+          : "Your bookings retrieved successfully",
+      data: result
+    });
 
     } catch(err: any){
         return res.status(500).json({
