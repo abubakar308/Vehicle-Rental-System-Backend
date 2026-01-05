@@ -127,32 +127,52 @@ const getALlBookings = async (user: any) =>{
 
 
 
- const updateBooking = async(status: string, bookingId: string) =>{
+ const updateBooking = async(status: string, user:any, bookingId: string) =>{
 
-    
-    const result = await pool.query(`UPDATE bookings SET status=$1 WHERE id=$2 RETURNING * `,[status, bookingId]);
+  if (user.role === "customer") {
+    const startDate = await pool.query(
+      `SELECT rent_start_date FROM bookings WHERE id=$1`,
+      [bookingId]
+    );
+    const booking = startDate.rows[0];
+    const today = new Date();
+    const rentStartDate = new Date(booking.rent_start_date);
+      if (today >= rentStartDate) {
+      throw new Error("Cannot update booking after rental has started");
+    }
+      const result = await pool.query(
+        `UPDATE bookings SET status=$1 WHERE id=$2 RETURNING *`,
+        [status, bookingId]
+      );
+      return result;
+    }
 
-    const vehicle_id = result.rows[0].vehicle_id;
 
-   const toDay = new Date();
-const endDay = new Date(result.rows[0].rent_end_date);
+  // Admin marks as returned
+  if (user.role === "admin") {
+    const updateStatus = await pool.query(
+      `UPDATE bookings SET status=$1 WHERE id=$2 RETURNING *`,
+      [status, bookingId]
+    );
+    const bookingsInfo = updateStatus.rows[0];
+    const vehicleId = updateStatus.rows[0].vehicle_id;
 
- let finalStatus = status;
+    const result = await pool.query(
+      `UPDATE vehicles SET availability_status=$1 WHERE id= $2
+      RETURNING availability_status`,
+      ["available", vehicleId]
+    );
+    const vehicleAvailable = result.rows[0].availability_status;
+   
+    return {
+      ...bookingsInfo,
+      vehicle: {
+        availability_status: vehicleAvailable,
+      },
+    };
+  }
 
- finalStatus = result.rows[0].status;
-
-if (toDay > endDay) {
-    finalStatus = "returned";
 }
-
-   if(status==="returned"){
-    const status = "available"
-    pool.query(`UPDATE Vehicles SET availability_status=$1 WHERE id=$2`,[status, vehicle_id])
-   }
-
-
-     return result;
- };
 
 
 export const bookingService = {

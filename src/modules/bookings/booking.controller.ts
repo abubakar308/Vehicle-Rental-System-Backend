@@ -49,30 +49,25 @@ const getALlBookings = async(req: Request, res: Response) =>{
 
 const updateBooking = async (req: Request, res: Response) =>{
 const {status} = req.body;
+const user =req.user;
 
 try{
-const result = await bookingService.updateBooking(status, req.params.bookingId!);
-
-if((result).rows.length === 0){
+const result = await bookingService.updateBooking(status, user, req.params.bookingId!);
+if(result.length === 0){
    return res.status(404).json({
         success: false,
      message: "Booking not found"
     })
-}else if(req.user.role === "admin" && result.rows[0].status === "returned"){
-   return res.status(200).json({
-        success: true,
-        message: "Booking marked as returned. Vehicle is now available",
-        data: result.rows[0]
-    })
 }
-else if(req.user.role === "customer" && result.rows[0].status === "canceled"){
-   return res.status(200).json({
-        success: true,
-        message: "Booking cancelled successfully",
-        data: result.rows[0]
-    })
-}
-
+console.log(result);
+  return res.status(200).json({
+      success: true,
+      message:
+        status === "cancelled"
+          ? "Booking cancelled successfully"
+          : "Booking marked as returned. Vehicle is now available",
+      data: result
+    });
 } catch(err:any){
        return res.status(500).json({
             successs: false,
