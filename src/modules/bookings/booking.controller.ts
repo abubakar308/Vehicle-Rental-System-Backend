@@ -8,7 +8,7 @@ const createBooking = async(req: Request, res: Response) =>{
      return res.status(201).json({
         success: true,
         message: "Booking created successfully",
-        data: result.rows[0]
+        data: result
     })
 
     } catch(err: any){

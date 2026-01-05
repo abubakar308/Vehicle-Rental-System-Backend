@@ -3,38 +3,62 @@ import { pool } from "../../config/db";
 const createBooking = async (payload: Record<string, unknown>) =>{
     const { customer_id, vehicle_id, rent_start_date, rent_end_date } = payload;
 
-    const vehicleData= await pool.query(`SELECT vehicle_name, daily_rent_price FROM Vehicles WHERE id=$1`, [vehicle_id]);
+      const isAvailable = await pool.query(
+    `SELECT vehicle_name, daily_rent_price, availability_status FROM vehicles WHERE id=$1`,
+    [vehicle_id]
+  );
 
-    const vehiclePrice = vehicleData.rows[0].daily_rent_price;
+  const vehicle = isAvailable.rows[0];
 
-    const start  = new Date(rent_start_date as any);
-    const end = new Date(rent_end_date as any);
+    if (isAvailable.rows.length === 0) {
+    throw new Error("Vehicle not found");
+  }
 
-const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+  if (vehicle.availability_status !== "available") {
+    throw new Error("Vehicle is not available for booking");
+  }
 
-const total_price = Math.ceil(vehiclePrice * days);
+  const start = new Date(rent_start_date as string);
+  const end = new Date(rent_end_date as string);
+
+  const diffDays = Math.ceil(
+    (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
+  );
+  const total_price = diffDays * vehicle.daily_rent_price;
+
+//   3️⃣ Insert booking
+
+  const bookingResult = await pool.query(
+    `INSERT INTO bookings (
+       customer_id, vehicle_id, rent_start_date, rent_end_date, total_price, status
+     ) VALUES ($1, $2, $3, $4, $5, $6)
+     RETURNING *`,
+    [
+      customer_id,
+      vehicle_id,
+      rent_start_date,
+      rent_end_date,
+      total_price,
+      "active",
+    ]
+  );
 
 
-    
-const status = "active";
 
-const result = await pool.query(`INSERT INTO Bookings(customer_id, vehicle_id, rent_start_date, rent_end_date, total_price, status) VALUES($1, $2, $3, $4, $5, $6) RETURNING *`, [customer_id, vehicle_id, rent_start_date, rent_end_date, total_price, status]);
+const booking = bookingResult.rows[0];
 
-if(result){
-    pool.query(`UPDATE Vehicles SET availability_status = 'booked' WHERE id = $1`,[vehicle_id]);
-};
+  await pool.query(
+    `UPDATE vehicles SET availability_status='booked' WHERE id=$1`,
+    [vehicle_id]
+  );
 
-const vehicleRes = await pool.query(
-  `SELECT vehicle_name, daily_rent_price, availability_status
-   FROM Vehicles 
-   WHERE id=$1`,
-  [vehicle_id]
-);
-
-console.log(vehicleRes);
-
-return result;
-
+  return {
+    booking,
+    vehicle: {
+      vehicle_name: vehicle.vehicle_name,
+      daily_rent_price: vehicle.daily_rent_price,
+    },
+  };
 
 }
 

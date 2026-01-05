@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
 import { userServices } from "./user.service"
+import { JwtPayload } from "jsonwebtoken";
 
 const getALlUsers = async(req: Request, res: Response) =>{
 
@@ -24,37 +25,42 @@ const getALlUsers = async(req: Request, res: Response) =>{
 
 
 const updateUser = async (req: Request, res: Response) =>{
+    const payload = req.body;
+  const loggedInUser = req.user as JwtPayload;
+  const { email } = req.body;
 
-try{
-const result = await userServices.updateUser(req.params.userId!);
+try {
+    if (loggedInUser.role !== "admin" && loggedInUser.email !== email ) {
+      return res.status(403).json({
+        success: false,
+        message: "Forbidden: You can only update your own profile",
+      });
+    }
 
-if (result.rows[0].role === "customer" && result.rows[0].id !== req.params.userId || result.rows[0].role !== "admin") {
-  return res.status(403).json({
-    success: false,
-    message: "Customers can update only their own profile",
-  });
-} 
-
-   return res.status(200).json({
-            success: true,
-            mesage: "User updated successfully",
-            data: result.rows[0]
-        })
-
-} catch(err:any){
-       return res.status(500).json({
-            successs: false,
-            message: err.message
-        })
-}
+    const result = await userServices.updateUser(
+      payload,
+      req.params.userId as string
+    );
+    res.status(200).json({
+      success: true,
+      message: "User updated successfully",
+      data: result.rows,
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
 }
 
 
 const deleteUser = async(req: Request, res: Response) =>{
     try{
-        const result = await userServices.deleteUser(req.params.id!)
+        const result = await userServices.deleteUser(req.params.id as string);
+        console.log(result);
 
-        if(result.rowCount == 0) {
+        if(result.rowCount === 0) {
             res.status(404).json({
                 success: false,
                 message: " user not found"
